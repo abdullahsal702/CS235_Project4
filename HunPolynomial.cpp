@@ -29,8 +29,29 @@ std::string HunPolynomial::CreatePolynomial()
 
     // gets the value of the first term
     int power = coefficients.size() - 1;
-    polynomial += std::to_string(coefficients[0]) + "*x^" + std::to_string(power);
+    if (coefficients[0] != 0)
+    {
+        if (coefficients[0] < -1)
+            polynomial += "- " + std::to_string(coefficients[0]).erase(0, 1);
+        else if (coefficients[0] == -1)
+            polynomial = "- ";
+
+        // else if (coefficients[0] == 1)
+        else if (coefficients[0] > 1)
+            polynomial += std::to_string(coefficients[0]);
+
+        if (coefficients[0] != -1 && coefficients[0] != 0 && coefficients[0] != 1)
+            polynomial += "*";
+
+        if (power > 1)
+            polynomial += "x^" + std::to_string(power);
+        else if (power == 1)
+            polynomial += "x";
+    }
     power--;
+
+    // polynomial += std::to_string(coefficients[0]) + "*x^" + std::to_string(power);
+    // power--;
 
     // iterates from second term and on
     for (int i = 1; i < coefficients.size(); i++)
@@ -80,6 +101,8 @@ std::ostream &operator<<(std::ostream &stream, HunPolynomial &poly)
 
 HunPolynomial HunPolynomial::operator+(HunPolynomial other)
 {
+    // find smaller vector, add zeroes to the start of that vector until it matches the size of the larger vector
+    // add each element of the vectors one by one
     std::vector<int> result_coefficients;
 
     while (coefficients.size() < other.coefficients.size())
@@ -113,6 +136,29 @@ HunPolynomial HunPolynomial::operator-(HunPolynomial other)
     return result;
 }
 
+HunPolynomial HunPolynomial::operator*(HunPolynomial other)
+{
+    // create a result vector with size = size of both vectors added together - 1
+    // fill the result vector with zeroes
+    // loop through both vectors, result[i + j] += coefficients[i] * other.coefficients[j]
+    // this will add like terms and assign the product of terms their proper power
+    int size = coefficients.size() + other.coefficients.size() - 1;
+    std::vector<int> result_coefficients;
+    for (int i = 0; i < size; i++)
+        result_coefficients.push_back(0);
+
+    for (int i = 0; i < coefficients.size(); i++)
+    {
+        for (int j = 0; j < other.coefficients.size(); j++)
+        {
+            result_coefficients[i + j] += coefficients[i] * other.coefficients[j];
+        }
+    }
+
+    HunPolynomial result{result_coefficients};
+    return result;
+}
+
 int main()
 {
     // HunPolynomial X{{-5, 3, -1, 0}};
@@ -120,12 +166,12 @@ int main()
     // std::string test = X.CreatePolynomial();
     // std::cout << test << "\n";
     // std::cout << X << std::endl;
-    HunPolynomial X{{-4, 0, 1, 0, -31}};
-    HunPolynomial Y{{5, 3, -1, 0}};
+    HunPolynomial A{{2, 0, 0, 0, 1, 6}};
+    HunPolynomial B{{1, -4, 0}};
     HunPolynomial Result;
-    // HunPolynomial Empty; // that would be an empty polinomial
+    HunPolynomial Empty;
 
-    Result = X + Y;
+    Result = A * Empty;
     std::cout << Result << std::endl;
 
     return 0;

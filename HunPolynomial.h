@@ -13,10 +13,10 @@ public:
     std::string CreatePolynomial();
     HunPolynomial operator+(HunPolynomial other);
     HunPolynomial operator-(HunPolynomial other);
+    HunPolynomial operator*(HunPolynomial other);
 
 private:
     std::vector<int> coefficients;
-    // std::string polynomial;
 };
 
 std::ostream &operator<<(std::ostream &stream, const HunPolynomial &poly);
