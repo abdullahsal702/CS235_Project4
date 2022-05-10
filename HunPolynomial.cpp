@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
 
 HunPolynomial::HunPolynomial(){};
 
@@ -16,8 +17,21 @@ void HunPolynomial::Set(std::vector<int> new_coefficients)
 }
 
 // 5*x^3 – 12*x – 1  => std::vector<int>{5, 0, -12, -1}
+void HunPolynomial::RemoveLeadingZeros(std::vector<int> &coefficients)
+{
+    if (coefficients.size() <= 1)
+        return;
+    while (coefficients[0] == 0)
+    {
+        coefficients.erase(coefficients.begin());
+        if (coefficients.size() == 1)
+            return;
+    }
+}
+
 std::string HunPolynomial::CreatePolynomial()
 {
+    RemoveLeadingZeros(coefficients);
     std::string polynomial = "";
     if (coefficients.size() < 1)
         return polynomial;
@@ -36,7 +50,7 @@ std::string HunPolynomial::CreatePolynomial()
         else if (coefficients[0] == -1)
             polynomial = "- ";
 
-        // else if (coefficients[0] == 1)
+        // else if (coefficients[0] == 1) do nothing
         else if (coefficients[0] > 1)
             polynomial += std::to_string(coefficients[0]);
 
@@ -49,9 +63,6 @@ std::string HunPolynomial::CreatePolynomial()
             polynomial += "x";
     }
     power--;
-
-    // polynomial += std::to_string(coefficients[0]) + "*x^" + std::to_string(power);
-    // power--;
 
     // iterates from second term and on
     for (int i = 1; i < coefficients.size(); i++)
@@ -89,6 +100,10 @@ std::string HunPolynomial::CreatePolynomial()
         }
         power--;
     }
+    // for debugging
+    //  for (int i = 0; i < coefficients.size(); i++)
+    //      std::cout << coefficients[i] << ' ';
+    //  std::cout << '\n';
     return polynomial;
 }
 
@@ -159,20 +174,14 @@ HunPolynomial HunPolynomial::operator*(HunPolynomial other)
     return result;
 }
 
-int main()
+float HunPolynomial::operator()(float x)
 {
-    // HunPolynomial X{{-5, 3, -1, 0}};
-    // X.Set({1, 15, -1, 20});
-    // std::string test = X.CreatePolynomial();
-    // std::cout << test << "\n";
-    // std::cout << X << std::endl;
-    HunPolynomial A{{2, 0, 0, 0, 1, 6}};
-    HunPolynomial B{{1, -4, 0}};
-    HunPolynomial Result;
-    HunPolynomial Empty;
-
-    Result = A * Empty;
-    std::cout << Result << std::endl;
-
-    return 0;
+    int power = coefficients.size() - 1;
+    float result = 0;
+    for (int i = 0; i < coefficients.size(); i++)
+    {
+        result += coefficients[i] * (pow(x, power));
+        power--;
+    }
+    return result;
 }
